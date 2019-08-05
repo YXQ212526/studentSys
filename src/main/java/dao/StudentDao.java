@@ -1,6 +1,8 @@
 package dao;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import enums.Status;
 import pojo.Student;
@@ -9,16 +11,18 @@ public class StudentDao extends CreateConn {
 
   // PreparedStatement preparedStatement;
 
-  public static String select(int id) {
+  public static Student select(int id) {
 
-    String selectSql = "select name from student where id=" + id;
+    String selectSql = "select id,name,status from student where id=" + id;
 
     try {
       resultSet = statement.executeQuery(selectSql);
       if (resultSet.next()) {
-        String name = resultSet.getString("name");
-        System.out.println("student:select success");
-        return name;
+        Student student = new Student();
+        student.setName(resultSet.getString("name"));
+        student.setStatus(Status.getType(resultSet.getString("status")));
+        student.setId(id);
+        return student;
       }
     } catch (SQLException e) {
       System.out.println("student:SQLException:select");
@@ -26,8 +30,9 @@ public class StudentDao extends CreateConn {
     return null;
   }
 
-  public static void insert(String name) {
-    String insertSql = String.format("insert into student(name) values('%s') ", name);
+  public static void insert(Student student) {
+    String insertSql = String.format("insert into student(id,name,status) values('%d','%s','%s') ",
+        student.getId(), student.getName(), student.getStatus());
     // String insertSql = "insert into student(name) values(?) ";
     //  String insertSql = "insert into student(name) values('"+name+"')";
     //  String insertSql = "insert into student(name) values('hi')";
@@ -44,17 +49,14 @@ public class StudentDao extends CreateConn {
     }
   }
 
-  public static void update(int id, int status) {
-    String updateSql = String.format("update student set status=%s where id = %d", Status.get(status), id);
+  public static int update(int id, int status) {
+    String updateSql = String.format("update student set status='%s' where id = %d", Status.get(status), id);
     try {
-      if (statement.executeUpdate(updateSql) == 0) {
-        System.out.println("student:update nothing");
-      } else {
-        System.out.println("student:update success");
-      }
+      return statement.executeUpdate(updateSql);
     } catch (SQLException e) {
       System.out.println("student:SQLException:update");
     }
+    return -1;
   }
 
   public static void delete(int id) {

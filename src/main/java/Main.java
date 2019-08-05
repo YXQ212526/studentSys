@@ -10,11 +10,11 @@ public class Main {
     // studentDao.select(1);
 
     // studentDao.update(1,"xiao");
-    StudentDao.insert("jack");
-    Student student=new Student();
-    student.setName("lily");
-    StudentDao.update(student);
-    StudentDao.delete(3);
+//    StudentDao.insert("jack");
+//    Student student=new Student();
+//    student.setName("lily");
+//    StudentDao.update(student);
+    //StudentDao.delete(3);
 
     CreateConn.close();
   //  studentDao.delete(1);

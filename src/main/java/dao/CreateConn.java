@@ -18,22 +18,30 @@ public class CreateConn {
     try {
       Class.forName("com.mysql.cj.jdbc.Driver");
     } catch (ClassNotFoundException e) {
-      System.out.println("pojo.Course:ClassNotFoundException");
+      System.out.println("conn:ClassNotFoundException");
     }
     try {
       connection = DriverManager.getConnection(
           "jdbc:mysql://localhost:3306/studentSys?useSSL=false&serverTimezone=UTC", "root", "Yxq12345!");
     } catch (SQLException e) {
-      System.out.println("pojo.Course:SQLException:connect");
+      System.out.println("conn:SQLException:connect");
     }
     try {
       statement = connection.createStatement();
     } catch (SQLException e) {
-      System.out.println("pojo.Course:SQLException:state");
+      System.out.println("conn:SQLException:state");
     }
   }
+
   public static void close() {
-    Close.colse(resultSet,statement,connection);
+    try {
+      statement.execute("delete from student");
+      statement.execute("delete from score");
+      statement.execute("delete from course");
+    } catch (SQLException e) {
+      System.out.println("conn:SQLException close");
+    }
+    Close.colse(resultSet, statement, connection);
   }
 
 }

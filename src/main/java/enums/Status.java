@@ -19,4 +19,11 @@ public enum Status {
     }
     return null;
   }
+  public static int getType(String string){
+    for (Status ele:Status.values()){
+      if(ele.status.equals(string))
+        return ele.type;
+    }
+    return -1;
+  }
 }
