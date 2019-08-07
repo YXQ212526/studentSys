@@ -1,0 +1,4 @@
+enums/StatusTest.class
+dao/StudentDaoTest.class
+dao/CourseDaoTest.class
+dao/ScoreDaoTest.class

@@ -4,22 +4,33 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import pojo.Course;
 import pojo.Score;
+import pojo.Student;
 
 public class ScoreDao extends CreateConn {
 
-  public static Map<Integer, Integer> select(int studentId, int year) {
+  public static Map<Student, Map<Course, Score>> select(int studentId, int year) {
 
-    Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-    String selectSql = "select course_id,goal from score where student_id=" + studentId + " and year=" + year;
-
+    Map<Student, Map<Course, Score>> map = new HashMap<Student, Map<Course, Score>>();
+    // String selectSql = "select course_id,goal from score where student_id=" + studentId + " and year=" + year;
+    String selectSql = String.format("select student.id as sid,student.name as sname,course.id as cid,course.name as cname, goal "
+        + "from student,score,course where student.id=%d and year=%d "
+        + "and student.id=score.student_id and course.id=score.course_id", studentId, year);
     try {
       resultSet = statement.executeQuery(selectSql);
       while (resultSet.next()) {
-        Integer course = resultSet.getInt("course_id");
-        int goal = resultSet.getInt("goal");
-        map.put(course, goal);
-
+        Student student = new Student();
+        student.setName(resultSet.getString("sname"));
+        student.setId(resultSet.getInt("sid"));
+        Course course = new Course();
+        course.setId(resultSet.getInt("cid"));
+        course.setName(resultSet.getString("cname"));
+        Score score = new Score();
+        score.setGoal(resultSet.getInt("goal"));
+        Map<Course, Score> interMap = new HashMap<Course, Score>();
+        interMap.put(course, score);
+        map.put(student, interMap);
       }
       System.out.println("score:select success");
       return map;
@@ -30,10 +41,10 @@ public class ScoreDao extends CreateConn {
     return null;
   }
 
-  public static Map<Integer, Integer> getTop10() {
+  public static Map<Student, Integer> getTop10() {
 
-    Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-    String selectSql = "select student.id,"
+    Map<Student, Integer> map = new HashMap<Student, Integer>();
+    String selectSql = "select student.id,student.name,"
         + "sum(score.goal) as 总成绩 "
         + "from student inner join score on "
         + "student.id=score.student_id "
@@ -43,7 +54,10 @@ public class ScoreDao extends CreateConn {
     try {
       resultSet = statement.executeQuery(selectSql);
       while (resultSet.next()) {
-        map.put(resultSet.getInt("id"), resultSet.getInt("总成绩"));
+        Student student = new Student();
+        student.setName(resultSet.getString("name"));
+        student.setId(resultSet.getInt("id"));
+        map.put(student, resultSet.getInt("总成绩"));
       }
       System.out.println("score:getTop10 success");
       return map;
@@ -54,17 +68,20 @@ public class ScoreDao extends CreateConn {
     return null;
   }
 
-  public static Map<Integer, Double> GPA() {
+  public static Map<Student, Double> GPA() {
 
-    Map<Integer, Double> map = new HashMap<Integer, Double>();
-    String selectSql = "select student.id,avg(goal) from"
+    Map<Student, Double> map = new HashMap<Student, Double>();
+    String selectSql = "select student.id,student.name,avg(goal) from"
         + " student,score where student.id=score.student_id "
         + "group by student.id";
 
     try {
       resultSet = statement.executeQuery(selectSql);
       while (resultSet.next()) {
-        map.put(resultSet.getInt("id"), resultSet.getDouble("avg(goal)") * 4 / 100);
+        Student student=new Student();
+        student.setId(resultSet.getInt("id"));
+        student.setName(resultSet.getString("name"));
+        map.put(student, resultSet.getDouble("avg(goal)") * 4 / 100);
       }
       System.out.println("score:GPA success");
       return map;

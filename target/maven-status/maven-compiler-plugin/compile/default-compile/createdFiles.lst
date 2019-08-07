@@ -1,0 +1,10 @@
+Main.class
+dao/CourseDao.class
+dao/ScoreDao.class
+enums/Status.class
+pojo/Course.class
+pojo/Student.class
+dao/StudentDao.class
+pojo/Close.class
+dao/CreateConn.class
+pojo/Score.class
